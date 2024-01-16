@@ -9,8 +9,10 @@ LSB Steganography is an image steganography technique in which messages are hidd
 ## How to run
 
 - Python is required for running this application.
-- install the other requirements using: > pip install -r requirements.txt
-- run the flask application using: > python app.py 
+- install the other requirements using: 
+	> pip install -r requirements.txt
+- run the flask application using: 
+	> python app.py 
 - open a browser and go to http://127.0.0.1:5000
 - Navigate to the "Embed" tab to embed secret text into an image.
 - Navigate to the "Extract" tab to extract secret text from an image.
