@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Steganography</title>
+    <!-- Bootstrap CSS link -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+
+<!-- Nav Tabs -->
+<ul class="nav nav-tabs" id="tabs">
+    <li class="nav-item">
+        <a class="nav-link active" id="embed-tab-link" data-toggle="tab" href="#embed-tab">Embed Text</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="extract-tab-link" data-toggle="tab" href="#extract-tab">Extract Text</a>
+    </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content mt-3">
+    <!-- Embed Tab -->
+    <div id="embed-tab" class="tab-pane fade show active">
+        <h2 class="mt-3">Embed Text in Image</h2>
+        <form id="embed-form" enctype="multipart/form-data" class="mb-3">
+            <div class="custom-file mb-3">
+                <input type="file" class="custom-file-input" id="image-upload" accept="image/*" required onchange="displayFileName()">
+                <label class="custom-file-label" for="image-upload" id="file-name-label">Choose Image</label>
+            </div>
+            <div class="form-group">
+                <label for="key">Key:</label>
+                <input type="number" class="form-control" id="key" placeholder="Enter key" required>
+            </div>
+            <div class="form-group">
+                <label for="secret-text">Secret Text:</label>
+                <textarea class="form-control" id="secret-text" placeholder="Enter your secret text" required></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="embedText()">Embed Text</button>
+            <button type="button" class="btn btn-success" onclick="downloadImage()">Download Image</button>
+        </form>
+        <img id="processed-image" class="img-fluid" style="display: none;" alt="Processed Image">
+    </div>
+
+    <!-- Extract Tab -->
+    <div id="extract-tab" class="tab-pane fade">
+        <h2 class="mt-3">Extract Text from Image</h2>
+        <form id="extract-form" enctype="multipart/form-data" class="mb-3">
+            <div class="custom-file mb-3">
+                <input type="file" class="custom-file-input" id="image-upload-extract" accept="image/*" required onchange="displayFileName('extract')">
+                <label class="custom-file-label" for="image-upload-extract" id="file-name-label-extract">Choose Image</label>
+            </div>
+            <div class="form-group">
+                <label for="key-extract">Key:</label>
+                <input type="number" class="form-control" id="key-extract" placeholder="Enter key" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="extractText()">Extract Text</button>
+        </form>
+        <div id="extracted-text"></div>
+    </div>
+</div>
+
+<!-- Bootstrap JS scripts (jQuery and Popper.js are required) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    var processedImage = document.getElementById("processed-image");
+
+    // Function to handle text embedding
+    function embedText() {
+        var fileInput = document.getElementById("image-upload");
+        var secretText = document.getElementById("secret-text").value;
+        var key = document.getElementById("key").value;
+
+        var formData = new FormData();
+        formData.append("image", fileInput.files[0]);
+        formData.append("secret-text", secretText);
+        formData.append("key", key);
+
+        // Send a POST request to the Flask endpoint for embedding
+        fetch("/embed", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            // Display the processed image
+            processedImage.src = result.result_image_path;
+            processedImage.style.display = "block";
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Function to handle image download
+    function downloadImage() {
+        // Trigger the download of the processed image
+        var link = document.createElement('a');
+        link.href = processedImage.src;
+        link.download = "result_image.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Function to handle text extraction
+    function extractText() {
+        var fileInput = document.getElementById("image-upload-extract");
+        var key = document.getElementById("key-extract").value;
+
+        var formData = new FormData();
+        formData.append("image", fileInput.files[0]);
+        formData.append("key", key);
+
+        // Send a POST request to the Flask endpoint for extraction
+        fetch("/extract", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            document.getElementById("extracted-text").innerText = "Extracted Text: " + result.extracted_text;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Function to display the selected file name
+    function displayFileName(type) {
+        var fileInput;
+        var fileNameLabel;
+
+        if (type === 'extract') {
+            fileInput = document.getElementById("image-upload-extract");
+            fileNameLabel = document.getElementById("file-name-label-extract");
+        } else {
+            fileInput = document.getElementById("image-upload");
+            fileNameLabel = document.getElementById("file-name-label");
+        }
+
+        if (fileInput.files.length > 0) {
+            fileNameLabel.innerText = fileInput.files[0].name;
+        } else {
+            fileNameLabel.innerText = "Choose Image";
+        }
+    }
+</script>
+
+</body>
+</html>

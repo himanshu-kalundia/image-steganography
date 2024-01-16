@@ -4,7 +4,7 @@ This is a web application for image steganography. Image Steganography is the pr
 
 ## LSB Steganography
 
-LSB Steganography is an image steganography technique in which messages are hidden inside an image by replacing each pixel’s least significant bit with the bits of the message to be hidden. We are also taking a key which will generate random sequence of pixles for hiding message. The receiver will also have to use the same key to get the hidden message.
+LSB Steganography is an image steganography technique in which messages are hidden inside an image by replacing each pixel’s least significant bit with the bits of the message to be hidden. We are also taking a key which will generate random sequence of pixles for hiding message. We will have to use the same key to extract the hidden message.
 
 ## How to run
 
