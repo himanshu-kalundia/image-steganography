@@ -16,3 +16,7 @@ LSB Steganography is an image steganography technique in which messages are hidd
 - open a browser and go to http://127.0.0.1:5000
 - Navigate to the "Embed" tab to embed secret text into an image.
 - Navigate to the "Extract" tab to extract secret text from an image.
+
+## Live website
+
+This web app is hosted live on https://himanshukalundia.pythonanywhere.com/
